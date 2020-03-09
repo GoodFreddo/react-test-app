@@ -8,11 +8,15 @@ const Person: FC = () => {
   const [picture, setPicture] = useState("");
   const [count, setCount] = useState(0);
   const [resolveText, setResolveText] = useState("Loading");
-  useEffect(() => {}, []);
+  const [loading, setloading] = useState(true);
 
-  fetch("https://randomuser.me/api/")
-    .then(result => JSON.stringify(result))
-    .then(setPicture);
+  useEffect(() => {
+    fetch("https://randomuser.me/api/")
+      .then(response => response.json())
+      .then(json => json.results[0].picture.large)
+      .then(pictureLink => setPicture(pictureLink))
+      .then(() => setloading(false));
+  }, []);
 
   testpromise.then(setResolveText);
   return (
@@ -20,7 +24,14 @@ const Person: FC = () => {
       <button onClick={() => setCount(count + 1)}>Click me to go up!</button>
       <button onClick={() => setCount(count - 1)}>Click me to go down!</button>
       <p>{count}</p>
-      <p>{picture}</p>
+
+      <p>
+        {!loading ? (
+          <img src={picture} alt="A random persons face" />
+        ) : (
+          "Loading"
+        )}
+      </p>
       <p>{resolveText}</p>
     </div>
   );
